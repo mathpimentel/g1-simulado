@@ -49,7 +49,7 @@ export function Home() {
   function decrementQuantity(id: string) {
     setCoffees( item =>
       item.map(coffee =>
-        coffee.id === id && coffee.quantity < 5
+        coffee.id === id && coffee.quantity < 0
         ? { ...coffee, quantity: coffee.quantity - 1}
       : coffee
     ) )
