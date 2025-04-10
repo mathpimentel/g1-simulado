@@ -72,7 +72,7 @@ export function Cart() {
   ]);
 
   const amountTags: string[] = [];
-  
+
   /** Adicionando os tags dos cafés no array amountTags
    * Se o tag já existir, não adiciona*/ 
   coffeesInCart.map(coffee => coffee.tags.map((tag) => {
@@ -88,7 +88,12 @@ export function Cart() {
 
   
   function handleItemIncrement(itemId: string) {
-    // coloque seu código aqui
+    setCoffeesInCart( item =>
+      item.map(coffee =>
+        coffee.id === itemId && coffee.quantity < 5
+        ? { ...coffee, quantity: coffee.quantity - 1}
+      : coffee
+    ) )
   }
 
   function handleItemDecrement(itemId: string) {

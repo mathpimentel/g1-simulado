@@ -4,7 +4,9 @@ import { useTheme } from 'styled-components'
 import { CoffeeCard } from '../../components/CoffeeCard'
 
 import { CoffeeList, Heading, Hero, HeroContent, Info } from './styles'
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import {api} from '../../serves/api'
+import { Loading } from '../../components/Loading';
 
 interface Coffee {
   id: string;
@@ -19,18 +21,39 @@ interface Coffee {
 export function Home() {
   const theme = useTheme();
 
+  const [coffees, setCoffees ] = useState<Coffee[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
+
+  async function fetchCoffee() {
+    const response = await api.get('/coffees')
+    setCoffees(response.data)
+    setLoading(false)
+  }
+
   useEffect(() => {
+      fetchCoffee()
     // request para a API para pegar os cafés
     // e setar no estado
   }, []);
 
-
-  
   function incrementQuantity(id: string) {
-    // Aqui você pode fazer a lógica para incrementar a quantidade do café
+    setCoffees( items =>
+      items.map(coffee =>
+        coffee.id === id && coffee.quantity < 5
+        ? { ...coffee, quantity: coffee.quantity + 1}
+      : coffee
+    ) )
+
   }
 
   function decrementQuantity(id: string) {
+    setCoffees( item =>
+      item.map(coffee =>
+        coffee.id === id && coffee.quantity < 5
+        ? { ...coffee, quantity: coffee.quantity - 1}
+      : coffee
+    ) )
+
     // Aqui você pode fazer a lógica para decrementar a quantidade do café
   }
 
@@ -100,22 +123,17 @@ export function Home() {
       <CoffeeList>
         <h2>Nossos cafés</h2>
 
+        {loading ? <Loading /> : 
         <div>
-        {[1,2,3].map((coffee) => (
-            <CoffeeCard key={coffee} coffee={{
-              description: 'Café expresso tradicional com espuma cremosa',
-              id: '1',
-              image: "/images/coffees/expresso-cremoso.png",
-              price: 9.90,
-              tags: ['Tradicional', 'Comum'],
-              title: 'Expresso Tradicional',
-              quantity: 1,
-            }}
+        {coffees.map((coffee) => (
+            <CoffeeCard key={coffee.id} coffee={coffee}
             incrementQuantity={incrementQuantity}
             decrementQuantity={decrementQuantity}
             />
           ))}
         </div>
+        }
+
       </CoffeeList>
     </div>
   )
